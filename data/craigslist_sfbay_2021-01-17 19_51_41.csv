@@ -1,0 +1,10 @@
+,year:,make:,model:,trim:,VIN:,condition:,odometer:,cylinders:,color:,transmission:,type:,status:,drive:,fuel:,price:
+0,2014.0,audi,q7,,,excellent,73500,,,automatic,,clean,,gas,26500
+1,2017.0,Cadillac,xt5,luxury,,like,74000,6,white,automatic,SUV,clean,fwd,gas,20000
+2,2007.0,ford,escape,hybrid,1FMCU59H67KB87925,good,240000,,white,automatic,SUV,clean,4wd,hybrid,4000
+3,2017.0,volkswagen,golf,gti,,like,56000,4,black,automatic,hatchback,clean,fwd,gas,16000
+4,2014.0,GMC,Sierra,1500,,excellent,103265,8,,automatic,truck,clean,4wd,gas,27900
+5,2005.0,audi,a4,,,excellent,137596,4,silver,manual,sedan,clean,4wd,gas,5000
+6,2008.0,dodge,ram,2500,,good,226000,6,silver,automatic,pickup,clean,rwd,diesel,16500
+8,2008.0,ford,f250,super,,good,155000,8,white,automatic,truck,clean,4wd,diesel,11000
+9,2004.0,Kia,Sedona,,,,141000,,,automatic,,clean,,gas,2400
