@@ -1,0 +1,10 @@
+,year:,make:,model:,trim:,VIN:,condition:,odometer:,cylinders:,color:,transmission:,type:,status:,drive:,fuel:,price:
+0,2006.0,audi,a3,2.0t,WAUNF78P46A060796,good,146000,4,grey,automatic,hatchback,clean,fwd,gas,4500
+1,1998.0,toyota,land,cruiser,JT3HT05J1W0012604,excellent,166000,8,black,automatic,SUV,clean,4wd,gas,14900
+2,2004.0,ford,explorer,,,good,149000,6,,automatic,SUV,clean,4wd,gas,2000
+3,1995.0,jeep,grand,cherokee,,fair,160000,8,grey,automatic,offroad,clean,4wd,gas,300
+5,2013.0,bmw,x3,xdrive28i,5UXWX9C5ODOA14263,excellent,109576,4,black,automatic,SUV,clean,4wd,gas,11500
+6,1992.0,Chevrolet,Silverado,,,fair,166208,8,,automatic,,clean,,diesel,5500
+7,2001.0,chevy,suburban,z71,3GNFK16T21G281122,fair,269000,8,,automatic,SUV,clean,4wd,gas,2000
+8,1997.0,toyota,camry,,,fair,178000,4,blue,automatic,sedan,clean,fwd,gas,2000
+9,2009.0,Dodge,Grand,Caravan,,excellent,162000,6,white,automatic,mini-van,clean,fwd,gas,4500
