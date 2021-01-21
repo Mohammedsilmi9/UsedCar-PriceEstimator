@@ -1,9 +1,13 @@
 import pandas as pd
 import numpy as np
 from scipy import stats
-
+# All raw data is scarpped and loaded into a file directory where it can be loaded
+# into a data frame which could be passed to the Process function. 
+# first parameter is a a pandas DataFrame.
+# second parameter is optional used to process  specific make&model combo for the available vehicles
+# Process returns a cleaned, unscaled ,includes no nulls , proper type , no duplicate and ready to scale data.
 def Process(df_,makmod=1):
-   
+       
     df_= df_[df_['price:'].notna()]
     df_['make:'].replace(['mazda','MAZDA'],'mazda',inplace=True)
     df_['make:'].replace(['MITSUBISHI'],'mitsubishi',inplace=True)
@@ -51,7 +55,10 @@ def Process(df_,makmod=1):
     df_['make:']=df_['make:'].apply(lambda x: x.lower())
     df_['model:']=df_['model:'].apply(lambda x: x.lower())
     df_['trim:'].fillna('', inplace=True)
-    df_['trim:']=df_['trim:'].apply(lambda x: x.lower())
+    
+    df_['trim:']=df_['trim:'].apply(lambda x: x.lower() if (type(x)=='str') else x)
+    
+    
     df_['model:']=df_['model:'].apply(lambda x: x.replace('-',""))
     df_['model:']=df_['model:'].apply(lambda x: x.replace(',',""))
     df_['model:']=df_['model:'].apply(lambda x: x.replace('.',""))

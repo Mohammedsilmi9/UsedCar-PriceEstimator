@@ -78,5 +78,7 @@ def Scrape(final_links):
     df_['price:'] = pd.to_numeric(df_['price:'])
     df_['year:'] = pd.to_numeric(df_['year:'])
     df_['odometer:'] = pd.to_numeric(df_['odometer:'])
+    
+    df_final=df_.dropna(axis=0, thresh=2, subset=['year:','make:','model:','trim:'])
 
-    return df_
+    return df_final
