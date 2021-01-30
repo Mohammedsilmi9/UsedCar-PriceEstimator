@@ -6,7 +6,22 @@ from scipy import stats
 # first parameter is a a pandas DataFrame.
 # second parameter is optional used to process  specific make&model combo for the available vehicles
 # Process returns a cleaned, unscaled ,includes no nulls , proper type , no duplicate and ready to scale data.
-def Process(df_,makmod=1):
+def Process(df,makemodel=0):
+
+    df= df[df['price:'].notna()]
+    df['Make&Model'] = df[['make:', 'model:']].apply(lambda x: ' '.join(x), axis=1)
+    if(makemodel!=0):
+        df=df[df['Make&Model']==makemodel]
+        df=df[['year:','score:','odometer:',
+               'cylinders:','price:']]
+    else:
+        df=df[['Make&Model','year:','score:','odometer:',
+               'cylinders:','price:']]
+    df=df.drop_duplicates()
+    df=df.reset_index(drop=True)
+    return df
+
+def Spell(df_):
        
     df_= df_[df_['price:'].notna()]
     df_['make:'].replace(['mazda','MAZDA'],'mazda',inplace=True)
@@ -57,52 +72,60 @@ def Process(df_,makmod=1):
     df_['trim:'].fillna('', inplace=True)
     
     df_['trim:']=df_['trim:'].apply(lambda x: x.lower() if (type(x)=='str') else x)
-    
-    
     df_['model:']=df_['model:'].apply(lambda x: x.replace('-',""))
     df_['model:']=df_['model:'].apply(lambda x: x.replace(',',""))
     df_['model:']=df_['model:'].apply(lambda x: x.replace('.',""))
-    
-    
     df_['model:'] = np.where(df_['model:'] == 'benz', df_['trim:'], df_['model:'])
-    #can do some model replacement of miss spelled values here before concatinating
-    df_['Make&Model'] = df_[['make:', 'model:']].apply(lambda x: ' '.join(x), axis=1)
-    df=df_[['year:','Make&Model','trim:','condition:','odometer:',
-                              'cylinders:','color:','transmission:',
-                              'type:','status:','drive:','fuel:','price:']]
+    df_['model:'] = np.where(df_['model:'] == 'model', df_['trim:'], df_['model:'])
+   
     
-    
-    if(makmod!=1):
-        df=df[df_['Make&Model']==makmod]
-        df.drop(columns='Make&Model',axis=1,inplace=True)
-    
-    col_drop=['trim:','color:','type:','fuel:','drive:','transmission:']
+    return df_
+
+def Replace(df):
+    df= df[df['price:'].notna()]
     df['year:']=df['year:'].astype(int)
     df['year:']=df['year:'].apply(lambda x:(2022-x))
     df['price:']=df['price:'].astype(int)
-    if(len(df)>12):
-        df=df[(np.abs(stats.zscore(df['price:'])) < 3)]
-        df=df[(np.abs(stats.zscore(df['odometer:'])) < 3)]
-    df=df[df['price:']>1000]
-    df['odometer:']=df['odometer:'].apply(lambda x: x*1000 if x<999 else x )
-    #odometer under 100 can be multiplied by 1000.
     df=df.drop_duplicates()
-    df.drop(columns=col_drop, inplace=True)
-    df=df.reset_index(drop=True)
+    
+    
     df['condition:']=df['condition:'].fillna("good")
     df['cylinders:']=df['cylinders:'].fillna("4")
     df['cylinders:']=df['cylinders:'].replace('other','4')
-    df['cylinders:']=df['cylinders:'].apply(lambda x: int(x))
-    cleanup_nums = {"condition:": {"new":3,"good": 2, "excellent": 3,"like": 3,"fair": 1,"salvage": 1},
-                    "transmission:": {"automatic": 1, "manual": 2, "other":3 },
-                   "status:":{"clean": 2, "salvage": 1, "missing":1,"lien":1,"parts":1,"rebuilt":1},
-                   "drive:":{"4wd": 3, "rwd": 2, "fwd":1},
-                   "fuel:":{'electric':5,"gas": 4, "diesel": 3, "hybrid":2,"other":1}}
+    df['cylinders:']=df['cylinders:'].astype(int)
+    df=df.drop_duplicates()
+    cleanup_nums ={
+    "condition:": {"new":2,"good": 1, "excellent": 2,"like": 2,"fair": 0,"salvage": 0},
+     "transmission:": {"automatic": 1, "manual": 2, "other":3 },
+    "status:":{"clean": 1, "salvage": 0, "missing":0,"lien":0,"parts":0,"rebuilt":0},
+    "drive:":{"4wd": 3, "rwd": 2, "fwd":1},
+    "fuel:":{'electric':5,"gas": 4, "diesel": 3, "hybrid":2,"other":1}}
     df= df.replace(cleanup_nums)
+    df['score:']=df['condition:']+df['status:']
+    
+    col_drop=['condition:','status:','trim:',
+              'color:','fuel:','type:','drive:','transmission:']
+    df.drop(columns=col_drop, inplace=True)
+    df=df.reset_index(drop=True)
+    
+    return df    
+
+def Outliers(df): 
+    #handling outliers 
+    df=df[(np.abs(stats.zscore(df['year:'])) <2.5)]
+    df=df[(np.abs(stats.zscore(df['odometer:'])) <3)]
+    df=df[(np.abs(stats.zscore(df['price:'])) <3)]
+    df=df[df['price:']>999]
+    df=df[df['odometer:']>2000]
+    df=df[df['odometer:']<500000]
+    #handling price skewness
+    if(df['price:'].skew()>0.8 or df['price:'].skew()<-0.8):
+        df['price:']=np.log2(df['price:'])
     cyl_min=df['cylinders:'].value_counts().min()
     cyl_max=df['cylinders:'].value_counts().max()
-    if(cyl_min/cyl_max)<(0.2)or(cyl_min/cyl_max==1):
+    
+    if((cyl_min/cyl_max)<(0.2)or(cyl_min/cyl_max==1)):
         df.drop(columns='cylinders:',axis=1,inplace=True)
-    df=df.drop_duplicates()
-    df=df.reset_index(drop=True)
+        
     return df
+    
