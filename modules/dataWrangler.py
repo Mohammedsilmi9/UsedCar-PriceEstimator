@@ -66,6 +66,8 @@ def Spell(df_):
     df_['make:'].replace([ 'chryler','chrystler','chyrsler','chysler',
                           'chrysler','CRYSLER','Cheysler'],'chrysler',inplace=True)
     df_['make:'].replace(['pontaic','pontiac'],'pontiac',inplace=True)
+    
+    df_['model:'].replace(['Rav 4','rav 4'],'rav4',inplace=True)
 
     df_['make:']=df_['make:'].apply(lambda x: x.lower())
     df_['model:']=df_['model:'].apply(lambda x: x.lower())
@@ -75,6 +77,7 @@ def Spell(df_):
     df_['model:']=df_['model:'].apply(lambda x: x.replace('-',""))
     df_['model:']=df_['model:'].apply(lambda x: x.replace(',',""))
     df_['model:']=df_['model:'].apply(lambda x: x.replace('.',""))
+    df_['model:']=df_['model:'].apply(lambda x: x.replace(' ',""))
     df_['model:'] = np.where(df_['model:'] == 'benz', df_['trim:'], df_['model:'])
     df_['model:'] = np.where(df_['model:'] == 'model', df_['trim:'], df_['model:'])
    
@@ -127,5 +130,12 @@ def Outliers(df):
     if((cyl_min/cyl_max)<(0.2)or(cyl_min/cyl_max==1)):
         df.drop(columns='cylinders:',axis=1,inplace=True)
         
+    return df
+
+def Multi_Outliers(df):
+    multi_outliers = df[(df['price:'] <12) & (df['year:'] < 7.5) ]
+    multi_outliers2 = df[(df['price:'] >13.5) & (df['year:'] > 12.5) ]
+    df=df[(~df.isin(multi_outliers) ) & (~df.isin(multi_outliers2) )]
+    df=df.dropna()
     return df
     
