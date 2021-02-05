@@ -26,7 +26,7 @@ def Spell(df_):
     df_= df_[df_['price:'].notna()]
     df_['make:'].replace(['mazda','MAZDA'],'mazda',inplace=True)
     df_['make:'].replace(['MITSUBISHI'],'mitsubishi',inplace=True)
-    df_['make:'].replace(['mercedes','Mercedes-benz','Mercedez','Mersedes','mbz','Mbz',
+    df_['make:'].replace(['MERCEDS','mercedes','Mercedes-benz','Mercedez','Mersedes','mbz','Mbz',
                           'mercedez','mercedes-benz','Mercedes',
                           'Benz','MERCEDES','Merceds','MERCEDES-BENZ',
                           'Mercedes-Benz','mersedes'],'mercedes-benz',inplace=True)
@@ -113,17 +113,11 @@ def Replace(df):
     
     return df    
 
-def Outliers(df): 
-    #handling outliers 
-    df=df[(np.abs(stats.zscore(df['year:'])) <2.5)]
-    df=df[(np.abs(stats.zscore(df['odometer:'])) <3)]
-    df=df[(np.abs(stats.zscore(df['price:'])) <3)]
+def Outliers_light(df): 
     df=df[df['price:']>999]
-    df=df[df['odometer:']>2000]
+    df=df[df['odometer:']>1000]
     df=df[df['odometer:']<500000]
-    #handling price skewness
-    if(df['price:'].skew()>0.8 or df['price:'].skew()<-0.8):
-        df['price:']=np.log2(df['price:'])
+    df['price:']=np.log2(df['price:'])
     cyl_min=df['cylinders:'].value_counts().min()
     cyl_max=df['cylinders:'].value_counts().max()
     
@@ -132,10 +126,26 @@ def Outliers(df):
         
     return df
 
-def Multi_Outliers(df):
-    multi_outliers = df[(df['price:'] <12) & (df['year:'] < 7.5) ]
-    multi_outliers2 = df[(df['price:'] >13.5) & (df['year:'] > 12.5) ]
-    df=df[(~df.isin(multi_outliers) ) & (~df.isin(multi_outliers2) )]
-    df=df.dropna()
-    return df
+def delete_outliers(df):
+    try:
+        m, b = np.polyfit(df['year:'], df['price:'], 1)
+    except:
+        m, b = np.polyfit(df['year:'], df['price:'], 1)
+    df_new=df
+    for x,y in zip(df['year:'], m*df['year:']+ b-1.5):
+        left=x
+        bottom=y
+        multi_outliers = df_new[(df_new['price:'] <bottom) & (df_new['year:'] < left)]
+        df_new=df_new[(~df_new.isin(multi_outliers) )]
+    for x,y in zip(df['year:'], m*df['year:']+ b+1.5):
+        right=x
+        top=y
+        multi_outliers2 = df[(df['price:'] >top) & (df['year:'] > right) ]
+        df_new=df_new[(~df_new.isin(multi_outliers2) )]
+        df_new=df_new.dropna()
+    return df_new
+
+
+
+
     
