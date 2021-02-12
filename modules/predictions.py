@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 
 
-def singlePredict(lin,frame):
+def singlePredict(lin,frame,r=25):
     link=[lin]
     raw=Scrape(link)
     df1=Spell(raw)
@@ -20,7 +20,7 @@ def singlePredict(lin,frame):
     df_=Process(df_replaced)
     make_dict=dict(df_['Make&Model'].value_counts())
     for i,x in make_dict.items():
-        if(x>20 and i==inputcar):
+        if(x>2 and i==inputcar):
             proccessed=Process(df_replaced,i)
             df=Outliers_light(proccessed)
             df=delete_outliers(df)
@@ -30,10 +30,10 @@ def singlePredict(lin,frame):
             scaler.transform(X)
             y=df['price:']
             train_features, test_features, train_labels, test_labels = \
-            train_test_split(X, y, test_size = 0.2, random_state = 22)
+            train_test_split(X, y, test_size = 0.1, random_state = r*3)
             #n_estimators down below can be specified
             #max_depth
-            rf = RandomForestRegressor(n_estimators=100,random_state = 98,max_depth=24)
+            rf = RandomForestRegressor(n_estimators=r*4,random_state = (r*2),max_depth=r)
             rf.fit(train_features, train_labels);
             # Calculate mean absolute percentage error (MAPE)
             y_pred=rf.predict(test_features)
