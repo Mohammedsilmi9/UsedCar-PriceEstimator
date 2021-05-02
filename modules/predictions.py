@@ -46,8 +46,8 @@ def singlePredict(lin,frame,r=25):
     if(len(df.columns)==4):
         x_feat=df3.drop(['Make&Model','cylinders:','price:'],axis=1)
     x_feat=x_feat.reset_index(drop=True)
-    scaler = StandardScaler()
-    scaler.fit(x_feat)
+    #scaler = StandardScaler()
+    #scaler.fit(x_feat)
     scaler.transform(x_feat)
     y_actual=df3[['price:']]
     result="predicted:",int(2**rf.predict(x_feat)[0]),"actual:",y_actual.values[0][0]
