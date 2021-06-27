@@ -145,6 +145,38 @@ def delete_outliers(df):
         df_new=df_new.dropna()
     return df_new
 
+def compare_2vehicles(vehicle1,vehicle2,frame):
+    df=Spell(frame)
+    df_all=Replace(df)
+    df_1=Process(df_all,vehicle1)
+    df_2=Process(df_all,vehicle2)
+    df_1=Outliers_light(df_1)
+    df_1=delete_outliers(df_1)
+    df_2=Outliers_light(df_2)
+    df_2=delete_outliers(df_2)
+    
+    
+    df1_yearGrouped=df_1.groupby("year:",axis=0).agg({'price:' : np.mean,'odometer:' : (np.mean),'score:':np.mean})
+    df2_yearGrouped=df_2.groupby("year:",axis=0).agg({'price:' : np.mean,'odometer:' : (np.mean),'score:':np.mean})
+    df1_yearGrouped['price:']=2**df1_yearGrouped['price:']
+    df2_yearGrouped['price:']=2**df2_yearGrouped['price:']
+    df1_yearGrouped.reset_index(inplace=True)
+    df2_yearGrouped.reset_index(inplace=True)
+    df1_yearGrouped['year:']=df1_yearGrouped['year:'].apply(lambda x:int(2022-x))
+    df2_yearGrouped['year:']=df2_yearGrouped['year:'].apply(lambda x:int(2022-x))
+    merged_df=df1_yearGrouped.merge(df2_yearGrouped, how='inner', on='year:')
+    merged_df=merged_df[["year:","score:_x","odometer:_x","price:_x","score:_y","odometer:_y","price:_y"]]
+    merged_df.rename(columns={"year:":"Year",
+                          "score:_x":vehicle1+" score",
+                          "odometer:_x":vehicle1+" odometer",
+                          "price:_x":vehicle1+" price",
+                          "score:_y":vehicle2+" score",
+                          "odometer:_y":vehicle2+" odometer",
+                          "price:_y":vehicle2+" price"
+                          },inplace=True)
+    return merged_df
+
+
 
 
 
