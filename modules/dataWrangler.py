@@ -68,6 +68,8 @@ def Spell(df_):
     df_['make:'].replace(['pontaic','pontiac'],'pontiac',inplace=True)
     
     df_['model:'].replace(['Rav 4','rav 4'],'rav4',inplace=True)
+    df_['model:'].replace(['escald','escalad'],'escalade',inplace=True)
+    
 
     df_['make:']=df_['make:'].apply(lambda x: x.lower())
     df_['model:']=df_['model:'].apply(lambda x: x.lower())
@@ -178,6 +180,25 @@ def compare_2vehicles(vehicle1,vehicle2,frame):
 
 
 
-
+def sample_dummies(x_feat,X):
+    x_feat['score:_0']=0
+    x_feat['score:_1']=0
+    x_feat['score:_2']=0
+    x_feat['score:_3']=0
+    
+    for x in x_feat.values:
+        if(x[1]==0):
+            x_feat['score:_0']=0
+        if(x[1]==1):
+            x_feat['score:_1']=1
+        if(x[1]==2):
+            x_feat['score:_2']=1
+        if(x[1]==3):
+            x_feat['score:_3']=1
+    
+    extra_columns=list((set(x_feat.columns)-set(X.columns)))
+    x_feat.drop(columns=extra_columns,inplace=True)
+    x_feat=x_feat.reset_index(drop=True)
+    return x_feat
 
     
